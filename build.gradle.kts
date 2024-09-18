@@ -12,6 +12,6 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.1.0")
-        // 上記で指定した場合はこの行を削除します
+        classpath("com.google.gms:google-services:4.3.15")
     }
 }

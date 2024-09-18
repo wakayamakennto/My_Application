@@ -4,9 +4,19 @@
     android:layout_height="wrap_content"
     android:padding="16dp">
 
+    <!-- 画像を表示するImageView -->
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"/>
+
+    <!-- テキストを表示するTextView -->
     <TextView
         android:id="@+id/textViewContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/imageView"
         android:textSize="16sp"/>
 </RelativeLayout>

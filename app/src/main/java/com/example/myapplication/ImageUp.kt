@@ -19,6 +19,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import java.io.InputStream
 import java.util.*
 
@@ -72,7 +74,7 @@ class ImageUp : AppCompatActivity() {
         }
 
         buttonUploadImage.setOnClickListener {
-            uploadImageToFirebase()
+            uploadImageToFirebase()  // 画像をFirebaseにアップロードする処理
         }
 
         // 権限が許可されているか確認する
@@ -91,15 +93,20 @@ class ImageUp : AppCompatActivity() {
         }
     }
 
-    // 画像をFirebase Storageにアップロードするメソッド
+    // 画像をFirebase Storageにアップロードして、そのURLをRealtime Databaseに保存するメソッド
     private fun uploadImageToFirebase() {
         if (imageUri != null) {
             val storageReference: StorageReference = FirebaseStorage.getInstance().reference
             val fileReference: StorageReference = storageReference.child("images/${UUID.randomUUID()}.jpg")
 
+            // 画像をFirebase Storageにアップロード
             fileReference.putFile(imageUri!!)
                 .addOnSuccessListener {
-                    Toast.makeText(this@ImageUp, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+                    // 画像のダウンロードURLを取得
+                    fileReference.downloadUrl.addOnSuccessListener { uri ->
+                        val imageUrl = uri.toString()
+                        saveImageUrlToDatabase(imageUrl)  // ダウンロードURLをRealtime Databaseに保存
+                    }
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this@ImageUp, "Failed to upload image: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -107,5 +114,26 @@ class ImageUp : AppCompatActivity() {
         } else {
             Toast.makeText(this@ImageUp, "No image selected", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    // 画像URLをFirebase Realtime Databaseに保存するメソッド
+    private fun saveImageUrlToDatabase(imageUrl: String) {
+        val databaseReference = FirebaseDatabase.getInstance().getReference("posts")
+        val postId = databaseReference.push().key ?: return
+
+        val post = mapOf(
+            "imageUrl" to imageUrl,
+            "text" to "Sample text",  // 投稿のテキストなど
+            "timestamp" to ServerValue.TIMESTAMP  // サーバー側のタイムスタンプ
+        )
+
+        // データをRealtime Databaseに保存
+        databaseReference.child(postId).setValue(post)
+            .addOnSuccessListener {
+                Toast.makeText(this@ImageUp, "Post saved successfully", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this@ImageUp, "Failed to save post: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 }

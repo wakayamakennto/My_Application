@@ -20,17 +20,19 @@
         app:layout_constraintVertical_bias="0.023" />
 
     <!-- 画像選択ボタン -->
+
+    <!-- 画像表示用のImageView -->
+
     <Button
         android:id="@+id/buttonSelectImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
         android:text="画像を選択"
-        app:layout_constraintTop_toBottomOf="@id/backButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.1" />
+        app:layout_constraintTop_toBottomOf="@id/backButton" />
 
-    <!-- 画像表示用のImageView -->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
