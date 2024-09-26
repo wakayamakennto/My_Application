@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Email Input -->
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="match_parent"
@@ -15,6 +16,7 @@
         android:layout_marginBottom="16dp"
         android:importantForAccessibility="yes"/>
 
+    <!-- Password Input -->
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
@@ -25,7 +27,26 @@
         android:layout_marginBottom="16dp"
         android:importantForAccessibility="yes"/>
 
+    <!-- ImageView for showing selected icon -->
+    <ImageView
+        android:id="@+id/imageViewIcon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_launcher_background"
+        android:contentDescription="User Icon" />
 
+    <!-- Button to select an image -->
+    <Button
+        android:id="@+id/buttonSelectImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Icon"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Register Button -->
     <Button
         android:id="@+id/buttonRegister"
         android:layout_width="match_parent"
@@ -34,6 +55,7 @@
         android:padding="16dp"
         android:layout_marginBottom="16dp"/>
 
+    <!-- Login Button -->
     <Button
         android:id="@+id/buttonLogin"
         android:layout_width="match_parent"
@@ -41,4 +63,5 @@
         android:text="Login"
         android:padding="16dp"
         android:layout_marginBottom="16dp"/>
+
 </LinearLayout>
