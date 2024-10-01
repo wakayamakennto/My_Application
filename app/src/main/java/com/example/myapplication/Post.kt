@@ -1,8 +1,13 @@
 package com.example.myapplication
 
 data class Post(
-    val content: String = "",   // 投稿の内容
-    val imageUrl: String = "",  // 画像のURL
-    val timestamp: Long = 0     // タイムスタンプ
+    val postId: String = "",
+    val userId: String = "",
+    val content: String = "",
+    val imageUrl: String = "",
+    val userIconUrl: String = "",  // 新しく追加
+    val timestamp: Long = 0
 )
+
+
 

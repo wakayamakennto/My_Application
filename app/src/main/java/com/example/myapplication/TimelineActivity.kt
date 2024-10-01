@@ -1,11 +1,13 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.*
+
 import com.bumptech.glide.Glide
 
 class TimelineActivity : AppCompatActivity() {
@@ -13,6 +15,7 @@ class TimelineActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var timelineAdapter: TimelineAdapter
     private lateinit var postList: MutableList<Post>
+    private lateinit var backButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +28,11 @@ class TimelineActivity : AppCompatActivity() {
         postList = mutableListOf()
         timelineAdapter = TimelineAdapter(postList)
         recyclerView.adapter = timelineAdapter
+        backButton = findViewById(R.id.backButton)
+
+        backButton.setOnClickListener {
+            finish()
+        }
 
         // Firebase Realtime Database からデータを取得
         val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("posts")

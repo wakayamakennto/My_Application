@@ -17,10 +17,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ServerValue
 import java.io.InputStream
 import java.util.*
 
@@ -32,19 +33,17 @@ class ImageUp : AppCompatActivity() {
     private lateinit var backButton: Button
     private var imageUri: Uri? = null
 
-    // 権限のリクエストランチャー
+    private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().getReference("posts")
+
     private val requestPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                // 権限が許可された場合、画像選択ボタンを有効にする
                 buttonSelectImage.isEnabled = true
             } else {
-                // 権限が拒否された場合、ユーザーにメッセージを表示する
                 Toast.makeText(this, "ストレージへのアクセス権限が必要です", Toast.LENGTH_SHORT).show()
             }
         }
 
-    // 画像選択の結果を処理するランチャー
     private val selectImageLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK && result.data != null) {
@@ -74,15 +73,12 @@ class ImageUp : AppCompatActivity() {
         }
 
         buttonUploadImage.setOnClickListener {
-            uploadImageToFirebase()  // 画像をFirebaseにアップロードする処理
+            uploadImageToFirebase()
         }
 
-        // 権限が許可されているか確認する
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // 権限が許可されていない場合、リクエストする
             requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         } else {
-            // 権限が既に許可されている場合、画像選択ボタンを有効にする
             buttonSelectImage.isEnabled = true
         }
 
@@ -93,19 +89,16 @@ class ImageUp : AppCompatActivity() {
         }
     }
 
-    // 画像をFirebase Storageにアップロードして、そのURLをRealtime Databaseに保存するメソッド
     private fun uploadImageToFirebase() {
         if (imageUri != null) {
             val storageReference: StorageReference = FirebaseStorage.getInstance().reference
             val fileReference: StorageReference = storageReference.child("images/${UUID.randomUUID()}.jpg")
 
-            // 画像をFirebase Storageにアップロード
             fileReference.putFile(imageUri!!)
                 .addOnSuccessListener {
-                    // 画像のダウンロードURLを取得
                     fileReference.downloadUrl.addOnSuccessListener { uri ->
                         val imageUrl = uri.toString()
-                        saveImageUrlToDatabase(imageUrl)  // ダウンロードURLをRealtime Databaseに保存
+                        saveImageUrlToDatabase(imageUrl)
                     }
                 }
                 .addOnFailureListener { e ->
@@ -116,18 +109,18 @@ class ImageUp : AppCompatActivity() {
         }
     }
 
-    // 画像URLをFirebase Realtime Databaseに保存するメソッド
     private fun saveImageUrlToDatabase(imageUrl: String) {
-        val databaseReference = FirebaseDatabase.getInstance().getReference("posts")
         val postId = databaseReference.push().key ?: return
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "Unknown User"
 
-        val post = mapOf(
-            "imageUrl" to imageUrl,
-            "text" to "Sample text",  // 投稿のテキストなど
-            "timestamp" to ServerValue.TIMESTAMP  // サーバー側のタイムスタンプ
+        val post = Post(
+            postId = postId,
+            userId = userId,
+            content = "Sample text",  // 投稿のテキストなど
+            imageUrl = imageUrl,
+            timestamp = System.currentTimeMillis()
         )
 
-        // データをRealtime Databaseに保存
         databaseReference.child(postId).setValue(post)
             .addOnSuccessListener {
                 Toast.makeText(this@ImageUp, "Post saved successfully", Toast.LENGTH_SHORT).show()
