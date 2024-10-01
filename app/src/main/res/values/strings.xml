@@ -1,3 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">貯金アプリ</string>
+    <string name="back_button">戻る</string>
+    <string name="enter_savings_amount">貯金額を入力</string>
+    <string name="set_savings_button">貯金額を設定</string>
+    <string name="savings_box">貯金箱</string>
+    <string name="invalid_amount">有効な金額を入力してください</string>
+    <string name="savings_set">貯金額を設定しました: %1$d 円</string>
+    <string name="go_to_savings_box_button">貯金箱へ移動</string>
 </resources>
